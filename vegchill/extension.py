@@ -1,4 +1,10 @@
-class VegChillInitExt(object):
+class VegChillExt(object):
+    @classmethod
+    def set_vegchill(cls, vegchill):
+        cls.vegchill = vegchill
+
+
+class VegChillInitExt(VegChillExt):
     """VegChill Init Extension, this class will be instantiated when init the instance,
     and init extension can be accessed from main instance like `veg_chill['ext_path']`"""
 
@@ -10,7 +16,7 @@ class VegChillInitExt(object):
         return ''
 
 
-class VegChillCmdExt(object):
+class VegChillCmdExt(VegChillExt):
     """VegChill Command Extension, see also: https://lldb.llvm.org/python-reference.html"""
 
     def __init__(self, debugger, session_dict):
@@ -29,6 +35,7 @@ class VegChillCmdExt(object):
     def cmd():
         """gets the extensions command to add to lldb"""
         raise NotImplementedError("cmd not implemented")
+
 
 class VegChillPlugin(object):
     """VegChill Plugin"""

@@ -29,6 +29,7 @@ class VegChill(object):
 
                 for ext in exts:
                     # all new init extension create
+                    ext.set_vegchill(self)
                     self.init_exts['%s.%s' % (plugin_import_path, ext.name())] = ext()
 
                 exts = plugin.cmd_ext()
@@ -38,6 +39,7 @@ class VegChill(object):
                 for ext in exts:
                     if self.cmd_ext_class.get(ext.cmd()):
                         print('Warning: command %s already exists! Rewritten' % ext.cmd())
+                    ext.set_vegchill(self)
                     self.cmd_ext_class[ext.cmd()] = ext
             except AttributeError as e:
                 print('Plugin %s load fail, ignored.' % plugin_import_path)
