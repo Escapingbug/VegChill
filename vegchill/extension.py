@@ -1,6 +1,6 @@
 class VegChillInitExt(object):
-    "VegChill Init Extension, this class will be instantiated when init the instance,
-    and init extension can be accessed from main instance like `veg_chill['ext_path']`"
+    """VegChill Init Extension, this class will be instantiated when init the instance,
+    and init extension can be accessed from main instance like `veg_chill['ext_path']`"""
 
     @staticmethod
     def name():
@@ -11,7 +11,7 @@ class VegChillInitExt(object):
 
 
 class VegChillCmdExt(object):
-    "VegChill Command Extension, see also: https://lldb.llvm.org/python-reference.html"
+    """VegChill Command Extension, see also: https://lldb.llvm.org/python-reference.html"""
 
     def __init__(self, debugger, session_dict):
         pass
