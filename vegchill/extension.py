@@ -1,7 +1,20 @@
 class VegChillExt(object):
+    priority = 100
+    dependency = []
+
     @classmethod
     def set_vegchill(cls, vegchill):
         cls.vegchill = vegchill
+
+    @staticmethod
+    def gdb_support():
+        """is this extension support gdb or not"""
+        return True
+
+    @staticmethod
+    def lldb_support():
+        """is this extension support lldb or not"""
+        return True
 
 
 class VegChillInitExt(VegChillExt):
