@@ -17,8 +17,9 @@ def depends_resolve(exts_with_import_path):
                     self.prior = ext.priority
                     self.in_cnt = len(ext.dependency)
 
-                def __eq__(self, other):
-                    return self.prior == other.prior
+                def __str__(self):
+                    return '%s - %d' % (self.ext.name(), self.in_cnt)
+
                 def __lt__(self, other):
                     return self.prior < other.prior
                 def __le__(self, other):
@@ -34,37 +35,46 @@ def depends_resolve(exts_with_import_path):
                     self.to = to
             vert_table = {}
             for ext, import_path in exts_with_import_path:
-                vert_table[ext.name()] = Vert(ext, import_path)
+                path = '%s.%s' % (import_path, ext.name())
+                vert_table[path] = Vert(ext, import_path)
             edges = set()
             for ext, import_path in exts_with_import_path:
                 # check if all depends can be resolved
-                vert = vert_table[ext.name()]
+                path = '%s.%s' % (import_path, ext.name())
+                vert = vert_table[path]
                 ignoring = False
                 for dep in ext.dependency:
                     if dep not in vert_table:
                         print(
-                            'Dependency %s of %s.%s not found, ignored.' % (dep, import_path, ext)
+                            'Dependency %s of %s not found, ignored.' % (dep, path)
                         )
                         ignoring = True
                         break
                 if ignoring:
                     continue
                 else:
-                    edges |= set(map(lambda x: Edge(vert, vert_table[x]), ext.dependency))
+                    edges |= set(map(lambda x: Edge(vert_table[x], vert), ext.dependency))
 
             # topology sort with priority considered
             seq = []
-            no_deps = sorted(filter(lambda x: x[1].in_cnt == 0, vert_table.items()))
-            while len(vert_table) != len(seq):
+            while len(vert_table):
+                # FIXME this can be optimized to not to loop each time but
+                # filter it out in count calculus
+                no_deps = sorted(filter(lambda x: x[1].in_cnt == 0, vert_table.items()))
+                no_dep_keys = set()
+                no_dep_vals = set()
+                for k, v in no_deps:
+                    no_dep_keys.add(k)
+                    no_dep_vals.add(v)
                 seq += list(map(lambda x: x[1], no_deps))
-                edges_associated = filter(lambda x: x.frm in no_deps, edges)
-                no_deps = []
+                edges_associated = filter(lambda x: x.frm in no_dep_vals, edges)
                 for e in edges_associated:
                     e.to.in_cnt -= 1
-                    if e.to.in_cnt == 0:
-                        no_deps.append(e.to)
                 edges -= set(edges_associated)
-                if len(no_deps) == 0 and len(vert_table) != len(seq):
+                vert_table = {
+                    k: vert_table[k] for k in filter(lambda x: x not in no_dep_keys, vert_table)
+                }
+                if len(no_deps) == 0 and len(vert_table) > 0:
                     print('Unresolvable dependencies, nothing will be loaded')
                     return []
             return map(lambda x: (x.ext, x.import_path), seq)
@@ -97,7 +107,9 @@ class VegChill(object):
                     exts = [exts]
                 # associate classes with import path
                 # generates list of (ext_class, import_path) tuples
-                init_ext_class += list(map(lambda x: (x, plugin_import_path), exts))
+                for ext in exts:
+                    ext.set_vegchill(self)
+                    init_ext_class.append((ext, plugin_import_path))
 
                 # cmd extensions don't worry about dependency, as they don't need to
                 # be instantiated for now
@@ -115,7 +127,6 @@ class VegChill(object):
                 if self.verbose == 'true':
                     print(e)
 
-        print('doing depends resolution')
         init_ext_class = depends_resolve(init_ext_class)
         for ext, import_path in init_ext_class:
             path = '%s.%s' % (import_path, ext.name())

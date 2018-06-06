@@ -3,15 +3,18 @@ import platform
 
 class DefaultThemeInitExt(VegChillInitExt):
 
+    dependency = ['vegchill.plugins.util.util']
+
     def __init__(self):
-        import lldb
+        util = self.vegchill.init_exts['vegchill.plugins.util.util']
         prompt_text = 'vegchill> '
         if platform.system() != 'windows':
             # FIXME don't know why ansi color code is not working, fix this
             #prompt = '\001\033[1;32m\002{0:s}\001\033[0m\002'.format(prompt_text)
-            lldb.debugger.SetPrompt(prompt_text)
+            prompt = prompt_text
+            util.set_prompt(prompt)
         else:
-            lldb.debugger.SetPrompt(prompt_text)
+            util.set_prompt(prompt_text)
     
     @staticmethod
     def name():
