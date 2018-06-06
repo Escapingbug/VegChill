@@ -20,10 +20,10 @@ class VegChillCmdExt(VegChillExt):
     """VegChill Command Extension, see also: https://lldb.llvm.org/python-reference.html"""
 
     def __init__(self, debugger, session_dict):
-        pass
+        raise NotImplementedError('command extension __init__ must be implemented')
 
     def __call__(self, debugger, command, exe_ctx, result):
-        pass
+        raise NotImplementedError('command extension __call__ must be implemented')
 
     def get_short_help(self):
         pass
