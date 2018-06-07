@@ -119,6 +119,8 @@ class TestCommand(test):
             print('Running gdb tests')
             with open(os.devnull, 'w') as fnull:
                 p = Popen('gdb', stdin=subprocess.PIPE, stdout=fnull)
+                p.stdin.write(b'source develop_app/load_vegchill.py\n')
+                p.stdin.flush()
                 p.stdin.write(b'source develop_app/test_vegchill.py\n')
                 p.stdin.flush()
                 # gdb can exit after unittest.main
@@ -127,6 +129,8 @@ class TestCommand(test):
             print('Running lldb tests')
             with open(os.devnull, 'w') as fnull:
                 p = Popen('lldb', stdin=subprocess.PIPE, stdout=fnull)
+                p.stdin.write(b'command script import develop_app/load_vegchill.py\n')
+                p.stdin.flush()
                 p.stdin.write(b'command script import develop_app/test_vegchill.py\n')
                 p.stdin.flush()
                 p.stdin.write(b'exit\n')
