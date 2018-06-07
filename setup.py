@@ -1,22 +1,30 @@
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-import ConfigParser
 import os
+import sys
 
 APP_NAME = 'VegChill'
 APP_AUTHOR = 'Anciety'
 
 INSTALL_SCRIPT = r'''
-import lldb
 import os
 import vegchill
 
+config_path = {}
 def __lldb_init_module(debugger, internal_dict):
-    vegchill.lldb_init_module(debugger, internal_dict, {})
+    vegchill.lldb_init_module(debugger, internal_dict, config_path)
+
+if __name__ == '__main__':
+    # gdb
+    vegchill.gdb_init_module(config_path)
 '''
 
 def post_install_init(app_path, rewrite_config=True, develop=False):
+    if sys.version_info >= (3, 0):
+        import configparser as ConfigParser
+    else:
+        import ConfigParser
     app_config_path = os.path.join(app_path, 'config')
     app_install_script_path = os.path.join(app_path, 'load_vegchill.py')
     if rewrite_config or not os.path.exists(app_config_path):
@@ -43,8 +51,8 @@ class PostDevelopCommand(develop):
         develop_app_dir = 'develop_app'
         if not os.path.exists(develop_app_dir):
             os.mkdir(develop_app_dir)
-        post_install_init(develop_app_dir, develop=True)
         develop.run(self)
+        post_install_init(develop_app_dir, develop=True)
 
 
 class PostInstallCommand(install):
@@ -53,8 +61,8 @@ class PostInstallCommand(install):
         app_path = user_data_dir(APP_NAME, APP_AUTHOR)
         if not os.path.exists(app_path):
             os.mkdir(app_path)
-        post_install_init(app_path)
         install.run(self)
+        post_install_init(app_path)
 
 setup(
     name=APP_NAME,
@@ -62,6 +70,7 @@ setup(
     packages=find_packages('src'),
     install_requires=[
         'appdirs >= 1.4.3',
+        'six >= 1.11.0',
     ],
     cmdclass={
         'develop': PostDevelopCommand,

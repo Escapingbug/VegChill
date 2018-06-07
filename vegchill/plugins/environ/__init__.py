@@ -1,1 +1,1 @@
-from environ_plugin import Plugin as plugin
+from .environ_plugin import Plugin as plugin

@@ -1,1 +1,1 @@
-from shell_cmd_plugin import Plugin as plugin
+from .shell_cmd_plugin import Plugin as plugin

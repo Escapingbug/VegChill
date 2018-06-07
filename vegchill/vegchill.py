@@ -5,7 +5,7 @@ from appdirs import user_data_dir
 APP_NAME = 'VegChill'
 APP_AUTHOR = 'Anciety'
 
-CONFIG_DEFULAT_PATH = os.path.join(user_data_dir(APP_NAME, APP_AUTHOR), 'config')
+CONFIG_DEFAULT_PATH = os.path.join(user_data_dir(APP_NAME, APP_AUTHOR), 'config')
 
 def depends_resolve(exts_with_import_path):
             """does topology sort to resolve dependencies
@@ -84,7 +84,7 @@ class VegChill(object):
     """VegChill Main Class
     """
 
-    def __init__(self, config):
+    def __init__(self, config, debugger_name):
         """inits the `VegChill` Class, mainly covers what an extension might need
         Args:
             config (object): a `ConfigParser` object
@@ -92,6 +92,7 @@ class VegChill(object):
         self.init_exts = {}
         self.cmd_ext_class = {}
         self.verbose = config.get('option', 'verbose')
+        self.debugger_name = debugger_name
 
         plugins = []
         # load plugins and extensions, but not instantiate anything until
@@ -133,8 +134,8 @@ class VegChill(object):
             self.init_exts[path] = ext()
 
 
-def init_vegchill(config_path):
-    import ConfigParser
+def init_vegchill(config_path, debugger_name):
+    from six.moves import configparser as ConfigParser
     config = ConfigParser.ConfigParser()
     # this is for adding environ plugin, since it must be prior to any others
     config.add_section('plugin')
@@ -142,18 +143,18 @@ def init_vegchill(config_path):
     # add default modules
     import pkgutil
     for _, plugin_name, _ in pkgutil.iter_modules(['vegchill/plugins']):
-        config.set('plugin', 'vegchill.plugins.%s' % plugin_name)
+        config.set('plugin', 'vegchill.plugins.%s' % plugin_name, '1')
 
     config.read(config_path)
 
-    vegchill = VegChill(config)
+    vegchill = VegChill(config, debugger_name)
     return vegchill
 
 
-def lldb_init_module(debugger, internal_dict, config_path=CONFIG_DEFULAT_PATH):
+def lldb_init_module(debugger, internal_dict, config_path=CONFIG_DEFAULT_PATH):
     import lldb
 
-    vegchill = init_vegchill(config_path)
+    vegchill = init_vegchill(config_path, 'lldb')
     
     # add commands
     has_imported = False
@@ -165,3 +166,11 @@ def lldb_init_module(debugger, internal_dict, config_path=CONFIG_DEFULAT_PATH):
         module_path = '%s.%s' % (cmd_ext.__module__, cmd_ext.__name__)
         cmd = 'command script add -c %s %s' % (module_path, cmd_name)
         lldb.debugger.HandleCommand(cmd)
+
+def gdb_init_module(config_path=CONFIG_DEFAULT_PATH):
+    import gdb
+    vegchill = init_vegchill(config_path, 'gdb')
+
+    for cmd_name in vegchill.cmd_ext_class:
+        cls = vegchill.cmd_ext_class[cmd_name]
+        cls(cmd_name, cls.gdb_command_class())

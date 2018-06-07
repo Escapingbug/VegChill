@@ -16,6 +16,11 @@ class VegChillExt(object):
         """is this extension support lldb or not"""
         return True
 
+try:
+    import gdb
+    Command = gdb.Command
+except:
+    Command = object
 
 class VegChillInitExt(VegChillExt):
     """VegChill Init Extension, this class will be instantiated when init the instance,
@@ -29,14 +34,29 @@ class VegChillInitExt(VegChillExt):
         return ''
 
 
-class VegChillCmdExt(VegChillExt):
+class VegChillCmdExt(VegChillExt, Command):
     """VegChill Command Extension, see also: https://lldb.llvm.org/python-reference.html"""
 
-    def __init__(self, debugger, session_dict):
-        raise NotImplementedError('command extension __init__ must be implemented')
+    def __init__(self, *args):
+        """lldb and gdb supported initialize
+        When in context of lldb, function args:
+            def __init__(self, debugger, session_dict):
+        or gdb:
+            def __init__(self, name, command_class)
+        but in gdb you don't need to do anything, just use parent's init function
+        """
+        if self.vegchill.debugger_name == 'gdb':
+            Command.__init__(self, *args)
+        else:
+            raise NotImplementedError('command extension __init__ must be implemented')
 
     def __call__(self, debugger, command, exe_ctx, result):
+        """lldb call function"""
         raise NotImplementedError('command extension __call__ must be implemented')
+
+    def invoke(self, argument, from_tty):
+        """gdb's invoke function"""
+        raise NotImplementedError('gdb invoke not implemented')
 
     def get_short_help(self):
         pass
@@ -49,7 +69,15 @@ class VegChillCmdExt(VegChillExt):
         """gets the extensions command to add to lldb"""
         raise NotImplementedError("cmd not implemented")
 
+    @staticmethod
+    def gdb_cmd_class():
+        """if this command supports gdb as well, this will give out its command class.
+        see: https://sourceware.org/gdb/onlinedocs/gdb/Commands-In-Python.html
+        If not, returns None.
+        """
+        return None
 
+    
 class VegChillPlugin(object):
     """VegChill Plugin"""
 

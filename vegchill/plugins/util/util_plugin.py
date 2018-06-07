@@ -6,13 +6,12 @@ class UtilInitExt(VegChillInitExt):
     This could be used to provided the abstraction over gdb or lldb"""
 
     priority = 0
-    dependency = ['vegchill.plugins.environ.environ']
 
     def __init__(self):
-        self.environ = self.vegchill.init_exts['vegchill.plugins.environ.environ']
+        pass
 
     def set_prompt(self, prompt):
-        if self.environ['debugger_name'] == 'gdb':
+        if self.vegchill.debugger_name == 'gdb':
             import gdb
             gdb.prompt_hook = lambda cur_prompt: prompt
         else:

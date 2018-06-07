@@ -1,1 +1,1 @@
-from util_plugin import Plugin as plugin
+from .util_plugin import Plugin as plugin

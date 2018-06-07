@@ -1,3 +1,3 @@
-from vegchill import *
-import extension
-import plugins
+from .vegchill import *
+from . import extension
+from . import plugins

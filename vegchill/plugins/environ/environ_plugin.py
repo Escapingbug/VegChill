@@ -10,7 +10,7 @@ class EnvironInitExt(VegChillInitExt):
     def __init__(self):
         self.env = {
             # gdb to be supported
-            'debugger_name': 'lldb'
+            'debugger_name': self.vegchill.debugger_name
         }
 
     def __getitem__(self, key):
