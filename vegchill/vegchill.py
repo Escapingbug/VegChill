@@ -92,6 +92,7 @@ class VegChill(object):
         self.init_exts = {}
         self.cmd_ext_class = {}
         self.verbose = config.get('option', 'verbose')
+        self.config = config
         self.debugger_name = debugger_name
 
         plugins = []
