@@ -82,7 +82,7 @@ class PostDevelopCommand(develop):
 
 class PostInstallCommand(install):
     def run(self):
-        import appdirs
+        from appdirs import user_data_dir
         app_path = user_data_dir(APP_NAME, APP_AUTHOR)
         if not os.path.exists(app_path):
             os.mkdir(app_path)
