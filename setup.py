@@ -85,7 +85,7 @@ class PostInstallCommand(install):
         from appdirs import user_data_dir
         app_path = user_data_dir(APP_NAME, APP_AUTHOR)
         if not os.path.exists(app_path):
-            os.mkdir(app_path)
+            os.makedirs(app_path)
         install.run(self)
         post_install_init(app_path)
 
