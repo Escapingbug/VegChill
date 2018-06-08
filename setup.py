@@ -147,6 +147,7 @@ setup(
         'six >= 1.11.0',
     ],
     setup_requires=[
+        'appdirs >= 1.4.3',
         'six >= 1.11.0',
     ],
     cmdclass={
