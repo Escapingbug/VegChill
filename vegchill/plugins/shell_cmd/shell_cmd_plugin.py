@@ -8,8 +8,7 @@ class LsCmdExt(VegChillCmdExt):
     """ls-like functionality
     """
     def __init__(self, *args):
-        if self.vegchill.environ['debugger'] == 'gdb':
-            VegChillCmdExt.__init__(self, *args)
+        VegChillCmdExt.__init__(self, *args)
 
     def __call__(self, debugger, command, exe_ctx, result):
         """lldb support"""

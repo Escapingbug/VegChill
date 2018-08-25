@@ -46,8 +46,6 @@ class VegChillCmdExt(VegChillExt, Command):
         """
         if self.vegchill.environ['debugger'] == 'gdb':
             Command.__init__(self, *args)
-        else:
-            raise NotImplementedError('command extension __init__ must be implemented')
 
     def __call__(self, debugger, command, exe_ctx, result):
         """lldb call function"""
