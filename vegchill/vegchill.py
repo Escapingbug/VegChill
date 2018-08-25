@@ -1,4 +1,5 @@
 from .compat import *
+from .environ import Environ
 import importlib
 import os
 from appdirs import user_data_dir
@@ -8,27 +9,20 @@ APP_AUTHOR = 'Anciety'
 
 CONFIG_DEFAULT_PATH = os.path.join(user_data_dir(APP_NAME, APP_AUTHOR), 'config')
 
-def depends_resolve(exts_with_import_path):
+# global object
+Veg = None
+
+def depends_resolve(vegchill, exts_with_import_path):
             """does topology sort to resolve dependencies
             """
             class Vert(object):
                 def __init__(self, ext, import_path):
                     self.ext = ext
                     self.import_path = import_path
-                    self.prior = ext.priority
                     self.in_cnt = len(ext.dependency)
 
                 def __str__(self):
                     return '%s - %d' % (self.ext.name(), self.in_cnt)
-
-                def __lt__(self, other):
-                    return self.prior < other.prior
-                def __le__(self, other):
-                    return self.prior <= other.prior
-                def __gt__(self, other):
-                    return self.prior > other.prior
-                def __ge__(self, other):
-                    return self.prior >= other.prior
 
             class Edge(object):
                 def __init__(self, frm, to):
@@ -36,17 +30,17 @@ def depends_resolve(exts_with_import_path):
                     self.to = to
             vert_table = {}
             for ext, import_path in exts_with_import_path:
-                path = '%s.%s' % (import_path, ext.name())
+                path = '%s:%s' % (import_path, ext.name())
                 vert_table[path] = Vert(ext, import_path)
             edges = set()
             for ext, import_path in exts_with_import_path:
                 # check if all depends can be resolved
-                path = '%s.%s' % (import_path, ext.name())
+                path = '%s:%s' % (import_path, ext.name())
                 vert = vert_table[path]
                 ignoring = False
                 for dep in ext.dependency:
                     if dep not in vert_table:
-                        print(
+                        self.warn(
                             'Dependency %s of %s not found, ignored.' % (dep, path)
                         )
                         ignoring = True
@@ -56,12 +50,12 @@ def depends_resolve(exts_with_import_path):
                 else:
                     edges |= set(map(lambda x: Edge(vert_table[x], vert), ext.dependency))
 
-            # topology sort with priority considered
+            # topology sort
             seq = []
             while len(vert_table):
                 # FIXME this can be optimized to not to loop each time but
                 # filter it out in count calculation
-                no_deps = sorted(filter(lambda x: x[1].in_cnt == 0, vert_table.items()))
+                no_deps = list(filter(lambda x: x[1].in_cnt == 0, vert_table.items()))
                 no_dep_keys = set()
                 no_dep_vals = set()
                 for k, v in no_deps:
@@ -76,7 +70,7 @@ def depends_resolve(exts_with_import_path):
                     k: vert_table[k] for k in filter(lambda x: x not in no_dep_keys, vert_table)
                 }
                 if len(no_deps) == 0 and len(vert_table) > 0:
-                    print('Unresolvable dependencies, nothing will be loaded')
+                    self.emer('Unresolvable dependencies, nothing will be loaded')
                     return []
             return map(lambda x: (x.ext, x.import_path), seq)
 
@@ -135,11 +129,11 @@ class VegChill(object):
         Args:
             config (object): a `ConfigParser` object
         """
+        self.environ = Environ.from_config(config)
         self.init_exts = {}
         self.cmd_ext_class = {}
-        self.log_level = config.get('option', 'log_level')
-        self.config = config
-        self.debugger_name = debugger_name
+        self.log_level = self.environ['log_level']
+        self.environ['debugger'] = debugger_name
 
         plugins = []
         # load plugins and extensions, but not instantiate anything until
@@ -174,9 +168,9 @@ class VegChill(object):
                 self.warn('Plugin %s load fail, ignored.' % plugin_import_path)
                 self.debug(e)
 
-        init_ext_class = depends_resolve(init_ext_class)
+        init_ext_class = depends_resolve(self, init_ext_class)
         for ext, import_path in init_ext_class:
-            path = '%s.%s' % (import_path, ext.name())
+            path = '%s:%s' % (import_path, ext.name())
             self.init_exts[path] = ext()
 
 
@@ -198,9 +192,11 @@ def init_vegchill(config_path, debugger_name):
 
 
 def lldb_init_module(debugger, internal_dict, config_path=CONFIG_DEFAULT_PATH):
+    global Veg
     import lldb
 
     vegchill = init_vegchill(config_path, 'lldb')
+    Veg = vegchill
     
     # add commands
     has_imported = False
@@ -214,8 +210,10 @@ def lldb_init_module(debugger, internal_dict, config_path=CONFIG_DEFAULT_PATH):
         lldb.debugger.HandleCommand(cmd)
 
 def gdb_init_module(config_path=CONFIG_DEFAULT_PATH):
+    global Veg
     import gdb
     vegchill = init_vegchill(config_path, 'gdb')
+    Veg = vegchill
 
     for cmd_name in vegchill.cmd_ext_class:
         cls = vegchill.cmd_ext_class[cmd_name]

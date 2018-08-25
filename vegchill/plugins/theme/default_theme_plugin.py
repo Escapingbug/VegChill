@@ -85,16 +85,16 @@ BANNERS = [
 
 class DefaultThemeInitExt(VegChillInitExt):
 
-    dependency = ['vegchill.plugins.util.util']
+    dependency = ['vegchill.plugins.util:util']
 
     def __init__(self):
-        util = self.vegchill.init_exts['vegchill.plugins.util.util']
+        util = self.vegchill.init_exts['vegchill.plugins.util:util']
         prompt_text = 'vegchill> '
         self.show_banner()
         if platform.system() != 'windows':
             prompt = '\001\033[1;32m\002{0:s}\001\033[0m\002'.format(prompt_text)
             # TODO FIXME fix this when lldb can handle this correctly
-            if self.vegchill.debugger_name == 'gdb':
+            if self.vegchill.environ['debugger'] == 'gdb':
                 util.set_prompt(prompt)
             else:
                 util.set_prompt(prompt_text)

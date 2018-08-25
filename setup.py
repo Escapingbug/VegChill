@@ -51,9 +51,9 @@ def post_install_init(app_path, rewrite_config=True, develop=False):
         config.add_section('plugin')
         config.add_section('option')
         if develop:
-            config.set('option', 'verbose', 'true')
+            config.set('option', 'log_level', 'debug')
         else:
-            config.set('option', 'verbose', 'false')
+            config.set('option', 'log_level', 'info')
         with open(app_config_path, 'w') as f:
             config.write(f)
     
@@ -158,5 +158,5 @@ setup(
     author=APP_AUTHOR,
     author_email='ding641880047@126.com',
     description='Veg Chickens lldb enhencement plugin',
-    keywords='lldb plugin',
+    keywords='lldb gdb plugin',
 )

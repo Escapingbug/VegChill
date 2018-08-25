@@ -1,5 +1,4 @@
 class VegChillExt(object):
-    priority = 100
     dependency = []
 
     @classmethod
@@ -29,7 +28,7 @@ class VegChillInitExt(VegChillExt):
     @staticmethod
     def name():
         """name of this extension
-        With name, one can access via ext_path, which is the module.ext_name.
+        With name, one can access via ext_path, which is written as module:ext_name.
         """
         return ''
 
@@ -45,7 +44,7 @@ class VegChillCmdExt(VegChillExt, Command):
             def __init__(self, name, command_class)
         but in gdb you don't need to do anything, just use parent's init function
         """
-        if self.vegchill.debugger_name == 'gdb':
+        if self.vegchill.environ['debugger'] == 'gdb':
             Command.__init__(self, *args)
         else:
             raise NotImplementedError('command extension __init__ must be implemented')
