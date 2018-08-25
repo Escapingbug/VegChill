@@ -1,3 +1,4 @@
+from .compat import *
 import importlib
 import os
 from appdirs import user_data_dir
@@ -59,7 +60,7 @@ def depends_resolve(exts_with_import_path):
             seq = []
             while len(vert_table):
                 # FIXME this can be optimized to not to loop each time but
-                # filter it out in count calculus
+                # filter it out in count calculation
                 no_deps = sorted(filter(lambda x: x[1].in_cnt == 0, vert_table.items()))
                 no_dep_keys = set()
                 no_dep_vals = set()
@@ -84,6 +85,51 @@ class VegChill(object):
     """VegChill Main Class
     """
 
+    LOG_EMER = 0 # emergency log level
+    LOG_ERR = 1 # error log level
+    LOG_WARN = 2 # warning log level
+    LOG_INFO = 3 # information log level
+    LOG_DEBUG = 4 # debug log level
+
+    def logging(self, level, content):
+        if level <= self.log_level:
+            self.do_logging(level, content)
+
+    def do_logging(self, level, content):
+        if level == 0:
+            print('[X] %s' % content)
+        elif level == 1:
+            print('[x] %s' % content)
+        elif level == 2:
+            print('[!] %s' % content)
+        elif level == 4:
+            print('[*] %s' % content)
+
+    def emer(self, content):
+        """emergency logging
+        """
+        self.logging(self.LOG_EMER, content)
+
+    def err(self, content):
+        """error logging
+        """
+        self.logging(self.LOG_ERR, content)
+
+    def warn(self, content):
+        """warning logging
+        """
+        self.logging(self.LOG_WARN, content)
+
+    def info(self, content):
+        """information logging
+        """
+        self.logging(self.LOG_INFO, content)
+
+    def debug(self, content):
+        """debug logging
+        """
+        self.logging(self.LOG_DEBUG, content)
+
     def __init__(self, config, debugger_name):
         """inits the `VegChill` Class, mainly covers what an extension might need
         Args:
@@ -91,7 +137,7 @@ class VegChill(object):
         """
         self.init_exts = {}
         self.cmd_ext_class = {}
-        self.verbose = config.get('option', 'verbose')
+        self.log_level = config.get('option', 'log_level')
         self.config = config
         self.debugger_name = debugger_name
 
@@ -121,13 +167,12 @@ class VegChill(object):
 
                 for ext in exts:
                     if self.cmd_ext_class.get(ext.cmd()):
-                        print('Warning: command %s already exists! Rewritten' % ext.cmd())
+                        self.warn('command %s already exists! Rewritten' % ext.cmd())
                     ext.set_vegchill(self)
                     self.cmd_ext_class[ext.cmd()] = ext
             except AttributeError as e:
-                print('Plugin %s load fail, ignored.' % plugin_import_path)
-                if self.verbose == 'true':
-                    print(e)
+                self.warn('Plugin %s load fail, ignored.' % plugin_import_path)
+                self.debug(e)
 
         init_ext_class = depends_resolve(init_ext_class)
         for ext, import_path in init_ext_class:
