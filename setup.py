@@ -156,7 +156,7 @@ setup(
         'test': TestCommand,
     },
     author=APP_AUTHOR,
-    author_email='ding641880047@126.com',
+    author_email='anciety512@gmail.com',
     description='Veg Chickens lldb enhencement plugin',
     keywords='lldb gdb plugin',
 )
