@@ -151,10 +151,10 @@ class DefaultThemeInitExt(VegChillInitExt):
 
 
 class Plugin(VegChillPlugin):
-    @staticmethod
-    def init_ext():
+    @classmethod
+    def init_ext(cls):
         return [DefaultThemeInitExt]
 
-    @staticmethod
-    def cmd_ext():
+    @classmethod
+    def cmd_ext(cls):
         return []

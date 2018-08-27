@@ -1,10 +1,10 @@
 from vegchill.extension import VegChillPlugin, VegChillInitExt, VegChillCmdExt
 
 class Plugin(VegChillPlugin):
-    @staticmethod
-    def init_ext():
+    @classmethod
+    def init_ext(cls):
         return []
 
-    @staticmethod
-    def cmd_ext():
+    @classmethod
+    def cmd_ext(cls):
         return []

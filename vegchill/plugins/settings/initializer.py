@@ -14,7 +14,7 @@ class GlobalInitializerExt(VegChillInitExt):
             gdb.execute('set history save on')
             gdb.execute('set history filename ~/.gdbhistory')
             gdb.execute('set output-radix 0x10')
-            gdb.execute('handle SIGALARM print nopass')
+            gdb.execute('handle SIGALRM print nopass')
         else:
             raise NotImplemented('lldb settings not implemented yet')
 
@@ -25,10 +25,10 @@ class GlobalInitializerExt(VegChillInitExt):
 
 class Plugin(VegChillPlugin):
 
-    @staticmethod
-    def init_ext():
-        return []
+    @classmethod
+    def init_ext(cls):
+        return [GlobalInitializerExt]
 
-    @staticmethod
-    def cmd_ext():
+    @classmethod
+    def cmd_ext(cls):
         return []

@@ -27,22 +27,22 @@ class LsCmdExt(VegChillCmdExt):
     def get_long_help(self):
         return 'list current directory files'
 
-    @staticmethod
-    def cmd():
+    @classmethod
+    def cmd(cls):
         return 'ls'
 
-    @staticmethod
-    def gdb_command_class():
+    @classmethod
+    def gdb_command_class(cls):
         import gdb
         return gdb.COMMAND_NONE
 
 
 class Plugin(VegChillPlugin):
     
-    @staticmethod
-    def init_ext():
+    @classmethod
+    def init_ext(cls):
         return []
 
-    @staticmethod
-    def cmd_ext():
+    @classmethod
+    def cmd_ext(cls):
         return LsCmdExt

@@ -61,35 +61,35 @@ class VegChillCmdExt(VegChillExt, Command):
     def get_long_help(self):
         pass
 
-    @staticmethod
-    def cmd():
+    @classmethod
+    def cmd(cls):
         """gets the extensions command to add to lldb"""
-        raise NotImplementedError("cmd not implemented")
+        raise NotImplementedError("cmd of %s not implemented" % cls)
 
-    @staticmethod
-    def gdb_cmd_class():
+    @classmethod
+    def gdb_cmd_class(cls):
         """if this command supports gdb as well, this will give out its command class.
         see: https://sourceware.org/gdb/onlinedocs/gdb/Commands-In-Python.html
         If not, returns None.
         """
-        return None
+        raise NotImplementedError('gdb_cmd_class of %s not implemented' % cls)
 
     
 class VegChillPlugin(object):
     """VegChill Plugin"""
 
-    @staticmethod
-    def init_ext():
+    @classmethod
+    def init_ext(cls):
         """get the initalize extensions from the plugin
         Returns:
             object: subclass of init extension or list of that
         """
-        raise NotImplementedError("init_ext not implemented")
+        raise NotImplementedError("init_ext of %s not implemented" % cls)
 
-    @staticmethod
-    def cmd_ext():
+    @classmethod
+    def cmd_ext(cls):
         """get the command extensions from the plugin
         Returns:
             object: subclass of command extension or list of that
         """
-        raise NotImplementedError("cmd_ext not implemented")
+        raise NotImplementedError("cmd_ext of %s not implemented" % cls)

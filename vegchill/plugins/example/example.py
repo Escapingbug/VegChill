@@ -79,8 +79,8 @@ class ExampleCmdExt(VegChillCmdExt):
         """
         return 'long help message'
 
-    @staticmethod
-    def cmd():
+    @classmethod
+    def cmd(cls):
         """command
 
         The command you would like to use to refer to this implementation.
@@ -88,8 +88,8 @@ class ExampleCmdExt(VegChillCmdExt):
         """
         return 'example'
 
-    @staticmethod
-    def gdb_command_class():
+    @classmethod
+    def gdb_command_class(cls):
         """gdb command class
 
         This function is required by gdb implementation. Please refer to gdb
@@ -103,10 +103,10 @@ class Plugin(VegChillPlugin):
     """Example plugin, import this as plugin in __init__.py in this directory
     """
 
-    @staticmethod
-    def init_ext():
+    @classmethod
+    def init_ext(cls):
         return [ExampleInitExt]
 
-    @staticmethod
-    def cmd_ext():
+    @classmethod
+    def cmd_ext(cls):
         return [ExampleCmdExt]

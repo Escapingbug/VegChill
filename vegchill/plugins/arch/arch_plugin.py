@@ -45,10 +45,10 @@ class ArchInitExt(VegChillInitExt):
 
 
 class Plugin(VegChillPlugin):
-    @staticmethod
-    def init_ext():
+    @classmethod
+    def init_ext(cls):
         return ArchInitExt
 
-    @staticmethod
-    def cmd_ext():
+    @classmethod
+    def cmd_ext(cls):
         return []
