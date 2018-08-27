@@ -25,12 +25,12 @@ class VegChillInitExt(VegChillExt):
     """VegChill Init Extension, this class will be instantiated when init the instance,
     and init extension can be accessed from main instance like `veg_chill['ext_path']`"""
 
-    @staticmethod
-    def name():
+    @classmethod
+    def name(cls):
         """name of this extension
         With name, one can access via ext_path, which is written as module:ext_name.
         """
-        return ''
+        raise NotImplementedError('name of %s not implemented!' % (cls))
 
 
 class VegChillCmdExt(VegChillExt, Command):

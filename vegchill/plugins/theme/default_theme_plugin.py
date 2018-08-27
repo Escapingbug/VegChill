@@ -83,13 +83,52 @@ BANNERS = [
 """
 ]
 
+
+class EightColorInitExt(VegChillInitExt):
+
+    COLOR_TABLE = {
+        'red': '\x1b[31m',
+        'green': '\x1b[32m',
+        'yellow': '\x1b[33m',
+        'blue': '\x1b[34m',
+        'magenta': '\x1b[35m',
+        'cyan': '\x1b36m',
+        'reset': '\x1b[0m',
+    }
+
+    def colorize(self, color, content):
+        return COLOR_TABLE[color] + content + COLOR_TABLE['reset']
+
+    def red(self, content):
+        return self.colorize('red', content)
+
+    def green(self, content):
+        return self.colorize('green', content)
+
+    def yellow(self, content):
+        return self.colorize('yellow', content)
+
+    def blue(self, content):
+        return self.colorize('blue', content)
+
+    def magenta(self, content):
+        return self.colorize('magenta', content)
+
+    def cyan(self, content):
+        return self.colorize('cyan', content)
+
+    @classmethod
+    def name(self):
+        return 'eight_color'
+
+
 class DefaultThemeInitExt(VegChillInitExt):
 
     dependency = ['vegchill.plugins.util:util']
 
     def __init__(self):
         util = self.vegchill.init_exts['vegchill.plugins.util:util']
-        prompt_text = 'vegchill> '
+        prompt_text = 'veg> '
         self.show_banner()
         if platform.system() != 'windows':
             prompt = '\001\033[1;32m\002{0:s}\001\033[0m\002'.format(prompt_text)
@@ -106,15 +145,15 @@ class DefaultThemeInitExt(VegChillInitExt):
         import random
         print(random.choice(BANNERS))
 
-    @staticmethod
-    def name():
+    @classmethod
+    def name(cls):
         return 'default_theme_init'
 
 
 class Plugin(VegChillPlugin):
     @staticmethod
     def init_ext():
-        return DefaultThemeInitExt
+        return [DefaultThemeInitExt]
 
     @staticmethod
     def cmd_ext():

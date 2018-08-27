@@ -33,7 +33,7 @@ if __name__ == '__main__':
     sys.path.append('.')
     import vegchill
     import tests
-    unittest.main('tests')
+    unittest.main('tests', warnings='ignore', verbosity=2)
 '''
 
 def post_install_init(app_path, rewrite_config=True, develop=False):
@@ -49,11 +49,17 @@ def post_install_init(app_path, rewrite_config=True, develop=False):
     if rewrite_config or not os.path.exists(app_config_path):
         config = ConfigParser.ConfigParser()
         config.add_section('plugin')
+
+        # default config options
         config.add_section('option')
         if develop:
             config.set('option', 'log_level', 'debug')
         else:
             config.set('option', 'log_level', 'info')
+
+        # TODO windows compat?
+        config.set('option', 'tempdir', '/tmp/vegchill/')
+
         with open(app_config_path, 'w') as f:
             config.write(f)
     

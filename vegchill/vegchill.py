@@ -10,7 +10,7 @@ APP_AUTHOR = 'Anciety'
 CONFIG_DEFAULT_PATH = os.path.join(user_data_dir(APP_NAME, APP_AUTHOR), 'config')
 
 # global object
-Veg = None
+veg = None
 
 def depends_resolve(vegchill, exts_with_import_path):
             """does topology sort to resolve dependencies
@@ -32,6 +32,7 @@ def depends_resolve(vegchill, exts_with_import_path):
             for ext, import_path in exts_with_import_path:
                 path = '%s:%s' % (import_path, ext.name())
                 vert_table[path] = Vert(ext, import_path)
+                vegchill.debug('setup vert for %s' % path)
             edges = set()
             for ext, import_path in exts_with_import_path:
                 # check if all depends can be resolved
@@ -40,7 +41,7 @@ def depends_resolve(vegchill, exts_with_import_path):
                 ignoring = False
                 for dep in ext.dependency:
                     if dep not in vert_table:
-                        self.warn(
+                        vegchill.warn(
                             'Dependency %s of %s not found, ignored.' % (dep, path)
                         )
                         ignoring = True
@@ -70,7 +71,7 @@ def depends_resolve(vegchill, exts_with_import_path):
                     k: vert_table[k] for k in filter(lambda x: x not in no_dep_keys, vert_table)
                 }
                 if len(no_deps) == 0 and len(vert_table) > 0:
-                    self.emer('Unresolvable dependencies, nothing will be loaded')
+                    vegchill.emer('Unresolvable dependencies, nothing will be loaded')
                     return []
             return map(lambda x: (x.ext, x.import_path), seq)
 
@@ -96,8 +97,10 @@ class VegChill(object):
             print('[x] %s' % content)
         elif level == 2:
             print('[!] %s' % content)
-        elif level == 4:
+        elif level == 3:
             print('[*] %s' % content)
+        else:
+            print('[DEBUG] %s' % content)
 
     def emer(self, content):
         """emergency logging
@@ -167,11 +170,14 @@ class VegChill(object):
             except AttributeError as e:
                 self.warn('Plugin %s load fail, ignored.' % plugin_import_path)
                 self.debug(e)
+        self.debug('init extension classes: ' + str(init_ext_class))
 
         init_ext_class = depends_resolve(self, init_ext_class)
         for ext, import_path in init_ext_class:
             path = '%s:%s' % (import_path, ext.name())
             self.init_exts[path] = ext()
+
+        self.debug('loaded init extensions: ' + str(self.init_exts))
 
 
 def init_vegchill(config_path, debugger_name):
@@ -192,11 +198,11 @@ def init_vegchill(config_path, debugger_name):
 
 
 def lldb_init_module(debugger, internal_dict, config_path=CONFIG_DEFAULT_PATH):
-    global Veg
+    global veg
     import lldb
 
     vegchill = init_vegchill(config_path, 'lldb')
-    Veg = vegchill
+    veg = vegchill
     
     # add commands
     has_imported = False
@@ -210,10 +216,10 @@ def lldb_init_module(debugger, internal_dict, config_path=CONFIG_DEFAULT_PATH):
         lldb.debugger.HandleCommand(cmd)
 
 def gdb_init_module(config_path=CONFIG_DEFAULT_PATH):
-    global Veg
+    global veg
     import gdb
     vegchill = init_vegchill(config_path, 'gdb')
-    Veg = vegchill
+    veg = vegchill
 
     for cmd_name in vegchill.cmd_ext_class:
         cls = vegchill.cmd_ext_class[cmd_name]

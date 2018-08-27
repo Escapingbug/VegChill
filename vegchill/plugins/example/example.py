@@ -17,8 +17,8 @@ class ExampleInitExt(VegChillInitExt):
     # depend on some functionality of other extensions
     dependency = []
 
-    @staticmethod
-    def name():
+    @classmethod
+    def name(cls):
         """name of this extension
 
         Name is important for specify dependency or just specify what extension

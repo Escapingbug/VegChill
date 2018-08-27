@@ -3,7 +3,9 @@
 
 # from . import example # add this line to enable example plugin
 
+from . import settings
 from . import util
 from . import theme
 from . import shell_cmd
-#from . import arch
+from . import elf
+from . import arch
