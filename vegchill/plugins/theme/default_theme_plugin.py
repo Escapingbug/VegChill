@@ -1,5 +1,6 @@
 from vegchill.extension import VegChillPlugin, VegChillInitExt
 import platform
+from . import *
 
 BANNERS = [
     r'''                                                                                  
@@ -84,42 +85,7 @@ BANNERS = [
 ]
 
 
-class EightColorInitExt(VegChillInitExt):
 
-    COLOR_TABLE = {
-        'red': '\x1b[31m',
-        'green': '\x1b[32m',
-        'yellow': '\x1b[33m',
-        'blue': '\x1b[34m',
-        'magenta': '\x1b[35m',
-        'cyan': '\x1b36m',
-        'reset': '\x1b[0m',
-    }
-
-    def colorize(self, color, content):
-        return COLOR_TABLE[color] + content + COLOR_TABLE['reset']
-
-    def red(self, content):
-        return self.colorize('red', content)
-
-    def green(self, content):
-        return self.colorize('green', content)
-
-    def yellow(self, content):
-        return self.colorize('yellow', content)
-
-    def blue(self, content):
-        return self.colorize('blue', content)
-
-    def magenta(self, content):
-        return self.colorize('magenta', content)
-
-    def cyan(self, content):
-        return self.colorize('cyan', content)
-
-    @classmethod
-    def name(self):
-        return 'eight_color'
 
 
 class DefaultThemeInitExt(VegChillInitExt):
@@ -144,6 +110,7 @@ class DefaultThemeInitExt(VegChillInitExt):
     def show_banner():
         import random
         print(random.choice(BANNERS))
+
 
     @classmethod
     def name(cls):

@@ -2,59 +2,39 @@
 
 
 from vegchill.extension import VegChillPlugin, VegChillInitExt, VegChillCmdExt
-from vegchill.plugins.arch import arch
+from .context import *
+from vegchill.plugins.theme import *
+
+
+
+# info = default_theme_plugin.EightColorInitExt()
 class ContextUtilsInitExt(VegChillInitExt):
 
     dependency = ['vegchill.plugins.arch:arch']
 
-     
+    print(dependency)
     def __init__(self):
-        # TODO
-        pass
-    
-    @classmethod
-    def context_register(self,*arg):
+        self.context_register()
+
+    @staticmethod
+    def context_register():
         """
-        Disaply register information
+        Display register information of current execution context
         """
-        # if not self._is_running():
-        #     return
-        # display register info 
-        pc = arch.Arch.pc()
-        print("[%s]" % "registers".center(78,"-"))
-
-        return
-        
-    @classmethod
-    def context_code(self,*arg):
-        pass
+  
+        print(blue("[%s]" % "registers".center(78,'-')))
 
 
-    @classmethod
-    def context_stack(self,*arg):
-        pass
-
-
-    @classmethod
-    def context(self,*arg):
-        """
-        Disaplay various information of current exection context
-
-        """
-        pass
-        
-
-    
     @classmethod
     def name(cls):
-        return 'util'
+        return 'context'
     
 
 
 class Plugin(VegChillPlugin):
     @classmethod
     def init_ext(cls):
-        return []
+        return [ContextUtilsInitExt]
 
     @classmethod
     def cmd_ext(cls):
