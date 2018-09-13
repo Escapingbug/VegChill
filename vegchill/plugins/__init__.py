@@ -9,3 +9,4 @@ from . import theme
 from . import shell_cmd
 from . import elf
 from . import arch
+from . import context

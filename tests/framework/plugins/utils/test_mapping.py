@@ -23,3 +23,5 @@ class TestMappingUtil(unittest.TestCase):
         pid = process.pid
         self.assertIsNotNone(util.read_mapping_unix(pid))
         # TODO more tests on mapping
+
+import vegchill.plugins.context

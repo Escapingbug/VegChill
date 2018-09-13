@@ -128,7 +128,7 @@ class DefaultThemeInitExt(VegChillInitExt):
 
     def __init__(self):
         util = self.vegchill.init_exts['vegchill.plugins.util:util']
-        prompt_text = 'veg> '
+        prompt_text = 'VegDbg> '
         self.show_banner()
         if platform.system() != 'windows':
             prompt = '\001\033[1;32m\002{0:s}\001\033[0m\002'.format(prompt_text)
