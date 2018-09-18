@@ -1,30 +1,53 @@
 import unittest
+from six.moves import getoutput 
+
+def test_command(self, command, gdb, lldb):
+    if gdb:
+        res = gdb.execute(command, from_tty=True, to_string=True)
+        self.assertEqual(res, getoutput(command) + '\n')
+    else:
+        ci = lldb.debugger.GetCommandInterpreter()
+        ret = lldb.SBCommandReturnObject()
+        ci.HandleCommand(command, ret)
+        self.assertEqual(ret.GetOutput(), getoutput(command) + '\n')
+
 
 class TestShellCommand(unittest.TestCase):
-    def test_ls(self):
-        gdb = None
-        lldb = None
+    # TODO test commands with args
+
+    def setUp(self):
+        self.gdb = None
+        self.lldb = None
+
         try:
             import gdb
+            self.gdb = gdb
         except:
             pass
 
         try:
             import lldb
-            if lldb.debugger is None:
-                lldb = None
+            if self.lldb.debugger is None:
+                self.lldb = None
+            self.lldb = lldb
         except:
             pass
 
-        if gdb is None and lldb is None:
+        if self.gdb is None and self.lldb is None:
             raise Exception('no gdb or lldb available')
 
-        from six.moves import getoutput
-        if gdb:
-            res = gdb.execute('ls', from_tty=True, to_string=True)
-            self.assertEqual(res, getoutput('ls') + '\n')
-        else:
-            ci = lldb.debugger.GetCommandInterpreter()
-            ret = lldb.SBCommandReturnObject()
-            ci.HandleCommand('ls', ret)
-            self.assertEqual(ret.GetOutput(), getoutput('ls') + '\n')
+    
+    def test_ls(self):
+        test_command(self, 'ls', self.gdb, self.lldb)
+
+    def test_mkdir(self):
+        test_command(self, 'mkdir', self.gdb, self.lldb)
+
+    def test_mv(self):
+        test_command(self, 'mv', self.gdb, self.lldb)
+
+    def test_cp(self):
+        test_command(self, 'cp', self.gdb, self.lldb)
+
+    def test_rm(self):
+        test_command(self, 'rm', self.gdb, self.lldb)
