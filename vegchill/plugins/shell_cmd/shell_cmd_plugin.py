@@ -37,7 +37,7 @@ class LsCmdExt(VegChillCmdExt):
         return gdb.COMMAND_NONE
 
 class RmCmdExt(VegChillCmdExt):
-    """ls-like functionality
+    """Rm-like functionality
     """
     def __init__(self, *args):
         VegChillCmdExt.__init__(self, *args)
@@ -77,7 +77,7 @@ class RmCmdExt(VegChillCmdExt):
         return gdb.COMMAND_NONE
 
 class MvCmdExt(VegChillCmdExt):
-    """ls-like functionality
+    """Mv-like functionality
     """
     def __init__(self, *args):
         VegChillCmdExt.__init__(self, *args)
@@ -115,7 +115,7 @@ class MvCmdExt(VegChillCmdExt):
         return gdb.COMMAND_NONE
 
 class CpCmdExt(VegChillCmdExt):
-    """ls-like functionality
+    """Cp-like functionality
     """
     def __init__(self, *args):
         VegChillCmdExt.__init__(self, *args)
@@ -153,7 +153,7 @@ class CpCmdExt(VegChillCmdExt):
         return gdb.COMMAND_NONE
 
 class RmdirCmdExt(VegChillCmdExt):
-    """ls-like functionality
+    """Rmdir-like functionality
     """
     def __init__(self, *args):
         VegChillCmdExt.__init__(self, *args)
@@ -192,7 +192,7 @@ class RmdirCmdExt(VegChillCmdExt):
         return gdb.COMMAND_NONE
 
 class MkdirCmdExt(VegChillCmdExt):
-    """ls-like functionality
+    """Mkdir-like functionality
     """
     def __init__(self, *args):
         VegChillCmdExt.__init__(self, *args)
