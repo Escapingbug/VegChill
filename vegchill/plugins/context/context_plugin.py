@@ -2,59 +2,72 @@
 
 
 from vegchill.extension import VegChillPlugin, VegChillInitExt, VegChillCmdExt
-from vegchill.plugins.arch import arch
+from vegchill.plugins.theme import *
+import gdb
+import functools
+
+# info = default_theme_plugin.EightColorInitExt()
+
+def is_alive():
+    """
+    Check if GDB is runing
+    Return : PID (Int)
+    """
+    try:
+        return gdb.selected_inferior().pid > 0
+    except Exception as e:
+        return False
+
 class ContextUtilsInitExt(VegChillInitExt):
 
     dependency = ['vegchill.plugins.arch:arch']
 
-     
+    print(dependency)
     def __init__(self):
-        # TODO
-        pass
-    
-    @classmethod
-    def context_register(self,*arg):
-        """
-        Disaply register information
-        """
-        # if not self._is_running():
-        #     return
-        # display register info 
-        pc = arch.Arch.pc()
-        print("[%s]" % "registers".center(78,"-"))
+        self.context_register()
 
-        return
+    def only_is_gdb_running(f):
+        """
+        Decorator wrapper to check if GDB is running.
+        """
+        def wrapper(*args, **kwargs):
+            if is_alive():
+                return f(*args, **kwargs)
+            else:
+                print(red("No debugging session active"))
+        return wrapper
+            
+
+    # @staticmethod
+    @only_is_gdb_running
+    def context_register():
+        """
+        Display register information of current execution context
+        """
+
         
-    @classmethod
-    def context_code(self,*arg):
-        pass
+        print(blue("[%s]" % "registers".center(78,'-')))
+        try:
+            gdb.execute("info registers")
+            gdb.flush()
+            
+        except Exception as e:
+            print(e)
 
-
-    @classmethod
-    def context_stack(self,*arg):
-        pass
-
-
-    @classmethod
-    def context(self,*arg):
-        """
-        Disaplay various information of current exection context
-
-        """
-        pass
+        # print(red("Happy Hacking"))
         
 
-    
+
     @classmethod
     def name(cls):
-        return 'util'
+        return 'context'
     
 
 
 class Plugin(VegChillPlugin):
     @classmethod
     def init_ext(cls):
-        return []
+        return [ContextUtilsInitExt]
 
     @classmethod
     def cmd_ext(cls):
